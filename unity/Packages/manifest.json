@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "com.unity.inputsystem": "1.20.1",
+    "com.unity.test-framework": "1.4.6",
+    "com.unity.ugui": "2.0.0",
+    "com.unity.xr.arfoundation": "6.0.8",
+    "com.unity.xr.arkit": "6.0.8",
+    "com.unity.xr.core-utils": "2.4.0",
+    "com.unity.xr.management": "4.5.3",
+    "com.unity.modules.imageconversion": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.ui": "1.0.0",
+    "com.unity.modules.uielements": "1.0.0",
+    "com.unity.modules.unitywebrequest": "1.0.0",
+    "com.unity.modules.xr": "1.0.0"
+  }
+}

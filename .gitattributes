@@ -1,0 +1,4 @@
+# Preserve Unity's generated YAML format, including empty values with trailing spaces.
+unity/**/*.asset -whitespace
+unity/**/*.meta -whitespace
+unity/**/*.mat -whitespace

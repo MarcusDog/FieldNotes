@@ -1,0 +1,6 @@
+{
+  "name": "FieldNotes.Tests",
+  "references": ["FieldNotes.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "FieldNotes.Editor",
+  "references": ["FieldNotes.Runtime", "Unity.XR.Management", "Unity.XR.Management.Editor"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

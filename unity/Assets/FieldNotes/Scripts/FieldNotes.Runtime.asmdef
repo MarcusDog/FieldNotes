@@ -1,0 +1,6 @@
+{
+  "name": "FieldNotes.Runtime",
+  "rootNamespace": "FieldNotes",
+  "references": ["Unity.XR.ARFoundation", "Unity.XR.ARSubsystems", "Unity.XR.CoreUtils", "Unity.InputSystem", "Unity.ugui"],
+  "autoReferenced": true
+}
