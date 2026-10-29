@@ -48,15 +48,17 @@ func NewStore(path string) (*Store, error) {
 	defer file.Close()
 	dec := json.NewDecoder(file)
 	dec.DisallowUnknownFields()
-	if err := dec.Decode(&s.state); err != nil {
+	var loaded diskState
+	if err := dec.Decode(&loaded); err != nil {
 		return nil, fmt.Errorf("decode data: %w", err)
 	}
 	if err := dec.Decode(new(any)); err != io.EOF {
 		return nil, errors.New("unexpected trailing data in data file")
 	}
-	if err := validateState(s.state); err != nil {
+	if err := validateState(loaded); err != nil {
 		return nil, fmt.Errorf("invalid data: %w", err)
 	}
+	s.state = loaded
 	return s, nil
 }
 func validateIssue(i Issue) error {
@@ -85,18 +87,19 @@ func validateState(state diskState) error {
 	if state.Version != 1 || state.Issues == nil || state.Idempotency == nil {
 		return errors.New("unsupported or incomplete data format")
 	}
-	seen := map[string]bool{}
+	seen := map[string]Issue{}
 	for _, issue := range state.Issues {
 		if err := validateIssue(issue); err != nil {
 			return err
 		}
-		if seen[issue.ID] {
+		if _, exists := seen[issue.ID]; exists {
 			return errors.New("duplicate issue id")
 		}
-		seen[issue.ID] = true
+		seen[issue.ID] = issue
 	}
 	for key, record := range state.Idempotency {
-		if !validKey(key) || len(record.Fingerprint) != 64 || !seen[record.Issue.ID] {
+		current, exists := seen[record.Issue.ID]
+		if !validKey(key) || len(record.Fingerprint) != 64 || !exists {
 			return errors.New("invalid idempotency record")
 		}
 		if _, err := hex.DecodeString(record.Fingerprint); err != nil {
@@ -104,6 +107,13 @@ func validateState(state diskState) error {
 		}
 		if err := validateIssue(record.Issue); err != nil {
 			return err
+		}
+		// Only status and updatedAt may change after creation. Retry snapshots
+		// must still match the live issue's immutable fields and initial state.
+		current.Status = "open"
+		current.UpdatedAt = current.CreatedAt
+		if record.Issue != current {
+			return errors.New("idempotency snapshot does not match its issue")
 		}
 	}
 	return nil

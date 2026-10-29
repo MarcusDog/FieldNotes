@@ -8,7 +8,7 @@ Run from this directory:
 go run ./cmd/fieldnotes
 ```
 
-The service listens on `:8080` and creates `../data/issues.json` on the first successful write. An empty list is returned until an issue is explicitly created. A missing data file is valid; a malformed or incompatible existing file stops startup without overwriting it.
+The service listens on `:8080` and creates `../data/issues.json` on the first successful write. An empty list is returned until an issue is explicitly created. A missing data file is valid; a malformed or incompatible existing file stops startup without overwriting it. Stored documents require explicit version, issue array, and idempotency object; stored positions require every coordinate, and retry snapshots must match their issue's immutable fields.
 
 | Environment variable | Default | Meaning |
 | --- | --- | --- |

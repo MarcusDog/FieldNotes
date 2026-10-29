@@ -1,6 +1,8 @@
 package inspection
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"math"
 	"strings"
@@ -23,6 +25,33 @@ type Issue struct {
 	CreatedAt   string   `json:"createdAt"`
 	UpdatedAt   string   `json:"updatedAt"`
 }
+
+// UnmarshalJSON preserves the distinction between an actual origin point and
+// missing/null coordinates when loading persisted issues and retry snapshots.
+func (i *Issue) UnmarshalJSON(data []byte) error {
+	type issueJSON Issue
+	var decoded issueJSON
+	wire := struct {
+		*issueJSON
+		Position *struct {
+			X *float64 `json:"x"`
+			Y *float64 `json:"y"`
+			Z *float64 `json:"z"`
+		} `json:"position"`
+	}{issueJSON: &decoded}
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&wire); err != nil {
+		return err
+	}
+	if wire.Position == nil || wire.Position.X == nil || wire.Position.Y == nil || wire.Position.Z == nil {
+		return errors.New("issue position requires x, y, and z coordinates")
+	}
+	decoded.Position = Position{*wire.Position.X, *wire.Position.Y, *wire.Position.Z}
+	*i = Issue(decoded)
+	return nil
+}
+
 type CreateIssue struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
