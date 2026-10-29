@@ -1,5 +1,7 @@
 # FieldNotes Implementation Plan
 
+此文件保留立项时的实施计划，以下复选框为原始计划内容。当前完成状态、测试证据和待办事项以根目录 README、docs/VERIFICATION.md 与 docs/SUBMISSION.md 为准。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a truthful, testable Unity AR → Go → React inspection prototype for iPhone 15 Pro Max.

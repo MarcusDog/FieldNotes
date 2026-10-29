@@ -13,6 +13,7 @@
 | 窄屏 | 430×932 检查未发现横向页面溢出，详情在列表下方 |
 | Unity | 6000.3.27f1 LTS 编译、配置与 iOS 导出通过；21 项 EditMode 测试通过，包括真实 UnityWebRequest → Go 的中文提交和同键重试 |
 | iOS 构建 | Xcode 27.1 真机 Debug 构建通过，`codesign --verify --deep --strict` 通过；确认签名包含 ARKit 原生符号 |
+| 远程 CI | 工作流已触发，但两个任务均未进入测试步骤，账户侧执行限制使其失败；不记为通过，见 [首次运行](https://github.com/MarcusDog/FieldNotes/actions/runs/40920063255) |
 | 真机运行 | 安装并启动成功；设备日志显示相机 Granted、真实 ARWorldTrackingConfiguration 启动，修正包未再出现 ARKit 插件加载错误 |
 | 手机数据 | 用户放置并上报记录后，8090 后端和 React 均查到同一 ID、内容、优先级和三轴坐标；重启同一数据文件的 Go 后仍能查到 |
 
