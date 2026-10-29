@@ -2,3 +2,5 @@
 unity/**/*.asset -whitespace
 unity/**/*.meta -whitespace
 unity/**/*.mat -whitespace
+# Keep actual quoted prompt whitespace in the audit log.
+AI_LOG.md -whitespace
