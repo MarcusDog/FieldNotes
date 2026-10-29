@@ -25,7 +25,7 @@ WEB_DIR=../web/dist go run ./cmd/fieldnotes
 
 A phone uses `http://<computer-LAN-IP>:8080`; `localhost` on the phone refers to the phone. Native Unity requests do not need an Origin header. Browser origins must match the configured scheme, host, and port. The API has no authentication: use a trusted local network for this prototype.
 
-API contract is in `../docs/SPEC.md`. JSON write requests require `Content-Type: application/json`. Request bodies are limited to 64 KiB. Every position coordinate must be present and finite. Titles are trimmed; description may be omitted. Unknown fields and additional JSON values are rejected. Errors use `{ "error": { "code": "...", "message": "...", "fields": {} } }`, with optional `fields` for validation.
+API contract is in `../docs/SPEC.md`. JSON write requests require `Content-Type: application/json`. Request bodies are limited to 64 KiB. Every position coordinate must be present and finite. Title and description are trimmed before storage; title is required and limited to 120 Unicode code points, while optional description is limited to 2000. Limits apply after trimming and are also checked when loading persisted data. Unknown fields and additional JSON values are rejected. Errors use `{ "error": { "code": "...", "message": "...", "fields": {} } }`, with optional `fields` for validation.
 
 A POST may include a UUID `Idempotency-Key`. Retrying the same decoded request with the same key returns the original creation response with HTTP 201, including after a restart or later status changes. Reusing that key with changed values returns 409. JSON key order and whitespace do not affect matching; field values do. Keep the same key when retrying an uncertain submission, and generate a fresh key for each new issue.
 

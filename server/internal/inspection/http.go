@@ -183,10 +183,7 @@ func (h *handler) create(w http.ResponseWriter, r *http.Request) {
 	if !decode(w, r, &input) {
 		return
 	}
-	fields := map[string]string{}
-	if strings.TrimSpace(input.Title) == "" {
-		fields["title"] = "Title is required"
-	}
+	fields := validateText(input.Title, input.Description)
 	if !validPriority(input.Priority) {
 		fields["priority"] = "Must be low, medium, or high"
 	}

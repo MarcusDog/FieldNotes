@@ -135,7 +135,7 @@ func (s *Store) Create(input CreateIssue, key string) (Issue, error) {
 		return Issue{}, fmt.Errorf("generate id: %w", err)
 	}
 	now := time.Now().UTC().Format(time.RFC3339Nano)
-	issue := Issue{ID: hex.EncodeToString(random), Title: strings.TrimSpace(input.Title), Description: input.Description, Priority: input.Priority, Status: "open", Position: input.Position, CreatedAt: now, UpdatedAt: now}
+	issue := Issue{ID: hex.EncodeToString(random), Title: strings.TrimSpace(input.Title), Description: strings.TrimSpace(input.Description), Priority: input.Priority, Status: "open", Position: input.Position, CreatedAt: now, UpdatedAt: now}
 	next := s.copyState()
 	next.Issues = append([]Issue{issue}, next.Issues...)
 	if key != "" {

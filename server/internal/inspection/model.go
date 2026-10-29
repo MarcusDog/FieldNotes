@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math"
 	"strings"
+	"unicode/utf8"
 )
 
 // Position is a Unity world-space point, measured in meters for one AR session.
@@ -43,5 +44,21 @@ func finite(p Position) bool {
 	return true
 }
 func validCreate(c CreateIssue) bool {
-	return strings.TrimSpace(c.Title) != "" && validPriority(c.Priority) && finite(c.Position)
+	return len(validateText(c.Title, c.Description)) == 0 && validPriority(c.Priority) && finite(c.Position)
+}
+
+// Text limits count Unicode code points after trimming surrounding whitespace.
+func validateText(title, description string) map[string]string {
+	fields := map[string]string{}
+	title = strings.TrimSpace(title)
+	description = strings.TrimSpace(description)
+	if title == "" {
+		fields["title"] = "Title is required"
+	} else if utf8.RuneCountInString(title) > 120 {
+		fields["title"] = "Title must be at most 120 characters"
+	}
+	if utf8.RuneCountInString(description) > 2000 {
+		fields["description"] = "Description must be at most 2000 characters"
+	}
+	return fields
 }
