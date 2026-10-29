@@ -17,7 +17,7 @@ The service listens on `:8080` and creates `../data/issues.json` on the first su
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated browser origins, or `*` |
 | `WEB_DIR` | unset | React build directory; enables assets and SPA navigation fallback |
 
-For a built dashboard, from `server/`:
+For a built dashboard, from `server/` (requests from the service's exact HTTP/HTTPS origin are allowed automatically):
 
 ```sh
 WEB_DIR=../web/dist go run ./cmd/fieldnotes

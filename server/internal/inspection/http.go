@@ -6,8 +6,10 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -79,14 +81,26 @@ func (h *handler) cors(w http.ResponseWriter, r *http.Request) bool {
 	}
 	w.Header().Add("Vary", "Origin")
 	allowed := ""
-	for _, candidate := range h.options.CORSOrigins {
-		if candidate == "*" {
-			allowed = "*"
-			break
+	if validOrigin(origin) {
+		scheme := "http"
+		if r.TLS != nil {
+			scheme = "https"
 		}
-		if candidate == origin {
+		// Compare the request's actual authority and transport. Forwarded
+		// headers are intentionally not trusted for this local service.
+		if origin == scheme+"://"+r.Host {
 			allowed = origin
-			break
+		} else {
+			for _, candidate := range h.options.CORSOrigins {
+				if candidate == "*" {
+					allowed = "*"
+					break
+				}
+				if candidate == origin {
+					allowed = origin
+					break
+				}
+			}
 		}
 	}
 	if allowed == "" {
@@ -105,6 +119,22 @@ func (h *handler) cors(w http.ResponseWriter, r *http.Request) bool {
 	}
 	return true
 }
+
+func validOrigin(origin string) bool {
+	parsed, err := url.Parse(origin)
+	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") ||
+		parsed.Hostname() == "" || parsed.User != nil || strings.HasSuffix(parsed.Host, ":") ||
+		origin != parsed.Scheme+"://"+parsed.Host {
+		return false
+	}
+	if port := parsed.Port(); port != "" {
+		if _, err := strconv.ParseUint(port, 10, 16); err != nil {
+			return false
+		}
+	}
+	return true
+}
+
 func methods(w http.ResponseWriter, r *http.Request, allowed string) bool {
 	for _, m := range strings.Split(allowed, ", ") {
 		if m == r.Method {
