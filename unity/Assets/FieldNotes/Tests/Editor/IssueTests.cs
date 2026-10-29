@@ -24,6 +24,17 @@ namespace FieldNotes.Tests
             Assert.That(url, Is.EqualTo("http://192.168.1.20:8080"));
         }
 
+        [TestCase("192.168.1.4:8090")]
+        [TestCase("http://192.168.1.4:8090")]
+        [TestCase("  http://192.168.1.4:8090/\n")]
+        [TestCase("http：／／192.168.1.4：8090")]
+        [TestCase("\u200bhttp://192.168.1.4:8090\ufeff")]
+        public void PhoneAddressEntryNormalizesCommonInputForms(string input)
+        {
+            Assert.That(Endpoint.TryNormalize(input, out var value), Is.True);
+            Assert.That(value, Is.EqualTo("http://192.168.1.4:8090"));
+        }
+
         [TestCase("file:///etc/passwd")]
         [TestCase("http://user:pass@example.com")]
         [TestCase("http://localhost:8080/api")]

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -83,12 +85,21 @@ namespace FieldNotes.Editor
             EditorUtility.SetDirty(perTarget);
             EditorUtility.SetDirty(general);
             EditorUtility.SetDirty(general.Manager);
+            // ARKit 6.0's batch preprocessor calls its loader refresh only when
+            // this symbol was already present at domain load. Persist it during
+            // setup, then export from a fresh Editor invocation/domain.
+            var defines = new HashSet<string>(PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.iOS).Split(';'));
+            if (defines.Add("UNITY_XR_ARKIT_LOADER_ENABLED"))
+                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.iOS, string.Join(";", defines));
         }
 
         [MenuItem("FieldNotes/2. Export iOS Xcode project")]
         public static void ExportIOS()
         {
             Configure();
+#if !UNITY_XR_ARKIT_LOADER_ENABLED
+            throw new InvalidOperationException("ARKit configuration changed. Let Unity recompile, then export again; the command-line script runs setup and export in separate invocations.");
+#else
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.iOS, BuildTarget.iOS))
                 throw new InvalidOperationException("Install Unity iOS Build Support through Unity Hub first.");
             var location = Environment.GetEnvironmentVariable("FIELDNOTES_IOS_OUTPUT") ?? "Builds/iOS";
@@ -98,6 +109,10 @@ namespace FieldNotes.Editor
                 target = BuildTarget.iOS, options = BuildOptions.Development
             });
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("iOS export failed: " + report.summary.result);
+            if (Directory.GetFiles(location, "UnityARKit.m", SearchOption.AllDirectories).Length == 0 ||
+                Directory.GetFiles(location, "libUnityARKit.a", SearchOption.AllDirectories).Length == 0)
+                throw new InvalidOperationException("iOS export is missing native ARKit plugins. Re-run setup and export after script compilation completes.");
+#endif
         }
     }
 }

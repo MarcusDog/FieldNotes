@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.XR.Management;
 
 namespace FieldNotes
 {
@@ -19,7 +20,7 @@ namespace FieldNotes
         readonly List<ARRaycastHit> hits = new List<ARRaycastHit>();
         readonly List<RaycastResult> uiHits = new List<RaycastResult>();
         string endpoint, frozenJson, requestKey, frozenEndpoint;
-        bool busy, ready, abandonArmed;
+        bool busy, ready, abandonArmed, initializingAR;
         const string AddressPreference = "FieldNotes.Backend";
 
         public void Configure(GameObject session, GameObject origin, ARRaycastManager raycastManager, ARPlaneManager planeManager)
@@ -27,26 +28,79 @@ namespace FieldNotes
             sessionRoot = session; originRoot = origin; raycasts = raycastManager; planes = planeManager;
         }
 
-        IEnumerator Start()
+        void Start()
         {
             ui = gameObject.AddComponent<RuntimeUI>();
             endpoint = PlayerPrefs.GetString(AddressPreference, "");
-            ui.Build(Submit, NewDraft, SaveAddress, CheckHealth, endpoint);
-            yield return Application.RequestUserAuthorization(UserAuthorization.WebCam);
-            if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+            ui.Build(Submit, NewDraft, SaveAddress, CheckHealth, RetryCamera, endpoint);
+            StartCoroutine(InitializeAR());
+        }
+
+        IEnumerator InitializeAR()
+        {
+            if (initializingAR || ready) yield break;
+            initializingAR = true;
+            ui.SetTracking("等待相机授权 · 请在系统弹窗中选择允许。");
+            yield return CameraPermissions.Request();
+            Debug.Log("FieldNotes camera authorization: " + CameraPermissions.State);
+            if (CameraPermissions.State != CameraAccess.Granted)
             {
-                ui.SetTracking("相机未授权 · 请到 iPhone 设置开启相机权限后重开应用。");
+                ShowCameraPermissionHint();
+                initializingAR = false;
+                yield break;
+            }
+            if (XRGeneralSettings.Instance == null || XRGeneralSettings.Instance.Manager == null || XRGeneralSettings.Instance.Manager.activeLoader == null)
+            {
+                ui.SetTracking("AR 模块加载失败 · 请更新应用并检查 iOS ARKit 构建配置。");
+                initializingAR = false;
                 yield break;
             }
             yield return ARSession.CheckAvailability();
             if (ARSession.state == ARSessionState.Unsupported)
             {
                 ui.SetTracking("此环境没有可用 ARKit。请使用支持 AR 的 iPhone 真机运行。");
+                initializingAR = false;
                 yield break;
             }
             sessionRoot.SetActive(true);
             originRoot.SetActive(true);
             ready = true;
+            initializingAR = false;
+        }
+
+        void ShowCameraPermissionHint()
+        {
+            ui.SetTracking(CameraPermissions.State == CameraAccess.Restricted
+                ? "相机受系统限制 · 请检查屏幕使用时间或设备管理限制。"
+                : "相机未授权 · 点击“相机权限 / 重试”前往设置开启。");
+        }
+
+        void RetryCamera()
+        {
+            if (initializingAR) return;
+            if (CameraPermissions.State == CameraAccess.Denied || CameraPermissions.State == CameraAccess.Restricted)
+            {
+                ShowCameraPermissionHint();
+                CameraPermissions.OpenSettings();
+            }
+            else if (!ready) StartCoroutine(InitializeAR());
+            else ui.Message("相机已授权。请缓慢移动手机扫描平面。");
+        }
+
+        void OnApplicationFocus(bool focused)
+        {
+            if (!focused || ui == null || initializingAR) return;
+            if (CameraPermissions.State == CameraAccess.Granted)
+            {
+                if (!ready) StartCoroutine(InitializeAR());
+            }
+            else
+            {
+                ready = false;
+                sessionRoot.SetActive(false);
+                originRoot.SetActive(false);
+                ShowCameraPermissionHint();
+            }
         }
 
         void Update()
@@ -110,13 +164,15 @@ namespace FieldNotes
                 return;
             }
             endpoint = normalized;
+            ui.Address.text = normalized;
             PlayerPrefs.SetString(AddressPreference, endpoint);
             PlayerPrefs.Save();
         }
         void CheckHealth(string input)
         {
             if (busy) return;
-            if (!Endpoint.TryNormalize(input, out var normalized)) { ui.Message("后端地址无效，请检查连接设置。", true); return; }
+            if (!Endpoint.TryNormalize(input, out var normalized)) { ui.Message("地址格式无效。请输入电脑 IP:端口，例如 192.168.1.4:8090。", true); return; }
+            SaveAddress(normalized);
             StartCoroutine(Health(normalized));
         }
         IEnumerator Health(string address)

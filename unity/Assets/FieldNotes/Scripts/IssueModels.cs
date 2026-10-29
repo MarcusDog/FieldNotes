@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using UnityEngine;
 
 namespace FieldNotes
@@ -51,7 +52,10 @@ namespace FieldNotes
         public static bool TryNormalize(string value, out string normalized)
         {
             normalized = null;
-            if (!Uri.TryCreate((value ?? "").Trim(), UriKind.Absolute, out var uri) ||
+            var input = (value ?? "").Normalize(NormalizationForm.FormKC)
+                .Replace("\u200b", "").Replace("\ufeff", "").Replace("\u2060", "").Trim();
+            if (!input.Contains("://")) input = "http://" + input;
+            if (!Uri.TryCreate(input, UriKind.Absolute, out var uri) ||
                 (uri.Scheme != "http" && uri.Scheme != "https") || string.IsNullOrEmpty(uri.Host) ||
                 uri.UserInfo.Length > 0 || uri.Query.Length > 0 || uri.Fragment.Length > 0 || uri.AbsolutePath != "/") return false;
             normalized = uri.GetLeftPart(UriPartial.Authority).TrimEnd('/');

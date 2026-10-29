@@ -12,6 +12,11 @@ namespace FieldNotes.Editor
         public static void OnBuild(BuildTarget target, string path)
         {
             if (target != BuildTarget.iOS) return;
+            var projectPath = PBXProject.GetPBXProjectPath(path);
+            var project = new PBXProject();
+            project.ReadFromFile(projectPath);
+            project.AddFrameworkToProject(project.GetUnityFrameworkTargetGuid(), "AVFoundation.framework", false);
+            project.WriteToFile(projectPath);
             var plistPath = Path.Combine(path, "Info.plist");
             var plist = new PlistDocument();
             plist.ReadFromFile(plistPath);

@@ -24,7 +24,7 @@ namespace FieldNotes
         readonly Color accent = new Color(.10f, .42f, .31f);
         readonly Color muted = new Color(.9f, .94f, .92f);
 
-        public void Build(Action report, Action clear, Action<string> saveAddress, Action<string> health, string endpoint)
+        public void Build(Action report, Action clear, Action<string> saveAddress, Action<string> health, Action retryCamera, string endpoint)
         {
             font = Resources.Load<Font>("NotoSansCJKsc-Regular");
             if (font == null) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -42,7 +42,9 @@ namespace FieldNotes
             var headerStack = Stack(header, 20);
             Label(headerStack, "FIELDNOTES  /  现场巡检", 40, 58, FontStyle.Bold);
             tracking = Label(headerStack, "正在初始化 AR…", 29, 75);
-            Button(headerStack, "后端连接设置", () => settings.SetActive(true), 54);
+            var headerActions = Row(headerStack, 54);
+            Button(headerActions, "后端连接设置", () => settings.SetActive(true), 54);
+            Button(headerActions, "相机权限 / 重试", () => retryCamera(), 54);
 
             var panel = Panel("Report form", safe, Vector2.zero, new Vector2(1, 0), new Vector2(26, 14), new Vector2(-26, 790));
             var form = Stack(panel, 22);
@@ -77,7 +79,7 @@ namespace FieldNotes
             Address.contentType = InputField.ContentType.Standard;
             Address.keyboardType = TouchScreenKeyboardType.URL;
             Address.text = endpoint;
-            connection = Button(configStack, "保存并测试连接", () => { saveAddress(Address.text); health(Address.text); }, 78, true);
+            connection = Button(configStack, "保存并测试连接", () => health(Address.text), 78, true);
             connectionFeedback = Label(configStack, "开发环境仅用于可信局域网。", 27, 120);
             Button(configStack, "返回巡检", () => { saveAddress(Address.text); settings.SetActive(false); }, 65);
             settings.SetActive(string.IsNullOrEmpty(endpoint));
