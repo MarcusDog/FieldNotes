@@ -1,13 +1,13 @@
 # 交付说明
 
-源码与完整开发历史见[公开仓库](https://github.com/MarcusDog/FieldNotes)，无需提取码。两段真实演示视频由本人另行录制，目前未包含在仓库中。完成录像后可上传到同一仓库的 Release，并在此添加下载链接。
+源码与完整开发历史见[公开仓库](https://github.com/MarcusDog/FieldNotes)，无需提取码。手机与电脑视频仅整理到本地 `FieldNotes-delivery.zip`，未公开上传。实际时长与覆盖情况见 [交付检查](DELIVERY_CHECK.md)。公开仓库提供源码和文档，本地压缩包同时包含视频与 Git 历史。
 
 ## 交付前检查
 
 - [x] Unity 6000.3.27f1 LTS 已通过 iOS 导出、真机构建和安装运行。
 - [ ] 真机识别平面、放标记、表单不穿透、提交成功/失败均已验收。
 - [x] React 已查到同一条手机记录；状态流程通过独立数据验收；实际手机数据在 Go 重启后仍保留。
-- [ ] 两段真实视频各 3–5 分钟并可播放。
+- [x] 两段视频均可播放，按本人确认使用现有短视频；原题要求的每段 3～5 分钟未达到。
 - [ ] 本人阅读 `docs/EXPLAIN.md` 对照源码，能说明实现，完成至少一次真实人工检查/修改过程并把后续 AI Prompt 原文追加到 `AI_LOG.md`。
 - [x] README 与验证记录已按实际版本和测试结果更新。
 - [x] 公开源码和历史已扫描，未包含现场数据、设备标识、构建缓存、签名凭证或访问密码。
@@ -19,14 +19,14 @@
 
 ```text
 FieldNotes-delivery/
-  source/             # Unity/Go/React 源码与文档
-  history.bundle      # 完整本地 Git 历史
+  source/
+  history.bundle
   videos/
-    01-iphone-ar.mp4
-    02-web-workflow.mp4
+    01-iphone-ar.mov
+    02-web-workflow.mov
 ```
 
-`./scripts/package.sh` 生成源码与历史压缩包；视频需要真实录制后放入 delivery/videos，再重新打包。脚本不会自动公开、上传、发邮件或发送 BOSS 消息。
+`./scripts/package.sh` 可生成源码、完整历史与视频压缩包，读取 `delivery/videos/` 中的素材。该脚本不发送邮件或 BOSS 消息。
 
 ## 邮件模板（本人填写后提交）
 
