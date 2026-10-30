@@ -2,6 +2,14 @@
 
 用 iPhone 在现场水平平面放置 AR 标记、填写问题，Go 保存记录，React 管理端查看并更新状态。手机与网页使用同一个后端。项目不需要大模型或 API Key。
 
+## 演示视频
+
+- [手机 AR 演示，约 26.5 秒](https://github.com/MarcusDog/FieldNotes/releases/download/v0.1.0/01-iphone-ar.mp4)
+- [电脑管理端演示，约 63.3 秒](https://github.com/MarcusDog/FieldNotes/releases/download/v0.1.0/02-web-workflow.mp4)
+- [GitHub Release](https://github.com/MarcusDog/FieldNotes/releases/tag/v0.1.0)
+
+手机视频中的旁人画面已作隐私模糊处理，两段均为真实录屏。
+
 ## 版本
 
 | 部分 | 使用版本 |
@@ -79,7 +87,7 @@ Go 单独运行的默认端口和 Vite 的默认代理都是 8080。一键脚本
 
 Unity 网络集成测试还需设置 `FIELDNOTES_TEST_API=http://127.0.0.1:8091`，指向使用独立数据文件的 Go 服务；未设置会跳过这一项。它会创建测试记录，请勿指向需要保留的现场数据。
 
-本地交付包包含手机与电脑两段短视频，分别约 26.5 秒和 63.3 秒，展示 AR 放置、提交及网页刷新后的同一问题；本次按本人确认使用现有素材，视频未公开上传。原题每段 3～5 分钟的时长要求未达到，状态修改和服务重启也未在当前素材中展示。完整核对见 [交付检查](docs/DELIVERY_CHECK.md)，已有测试与故障修正见 [验证记录](docs/VERIFICATION.md)。
+GitHub Release 提供手机与电脑两段短视频，分别约 26.5 秒和 63.3 秒，展示 AR 放置、提交及网页刷新后的同一问题；本次按本人确认使用现有素材并公开发布。原题每段 3～5 分钟的时长要求未达到，状态修改和服务重启也未在当前素材中展示。完整核对见 [交付检查](docs/DELIVERY_CHECK.md)，已有测试与故障修正见 [验证记录](docs/VERIFICATION.md)。
 
 目前仅支持 iOS ARKit；平面只有绿色轮廓，部分环境不易看清。不恢复跨会话物理位置，无登录、照片上传、离线队列或自动刷新；未提交草稿在进程退出后不保留。JSON 存储适合单进程原型，不能让多个进程同时操作同一文件。损坏的数据文件会使服务拒绝启动，维护前应先停服务并备份。
 

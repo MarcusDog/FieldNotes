@@ -1,6 +1,6 @@
 # 交付说明
 
-源码与完整开发历史见[公开仓库](https://github.com/MarcusDog/FieldNotes)，无需提取码。手机与电脑视频仅整理到本地 `FieldNotes-delivery.zip`，未公开上传。实际时长与覆盖情况见 [交付检查](DELIVERY_CHECK.md)。公开仓库提供源码和文档，本地压缩包同时包含视频与 Git 历史。
+源码与完整开发历史见[公开仓库](https://github.com/MarcusDog/FieldNotes)，无需提取码。手机与电脑视频已附在 [GitHub Release](https://github.com/MarcusDog/FieldNotes/releases/tag/v0.1.0)，可以直接下载 [手机 MP4](https://github.com/MarcusDog/FieldNotes/releases/download/v0.1.0/01-iphone-ar.mp4) 和 [电脑 MP4](https://github.com/MarcusDog/FieldNotes/releases/download/v0.1.0/02-web-workflow.mp4)。手机视频中的旁人画面已作隐私模糊处理。实际时长与覆盖情况见 [交付检查](DELIVERY_CHECK.md)。本地交付包保留两段原始 MOV，公开仓库保留源码、文档和完整 Git 历史。
 
 ## 交付前检查
 

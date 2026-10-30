@@ -24,3 +24,5 @@ unity/*.slnx
 delivery/videos/
 *.bundle
 *.zip
+
+delivery/public/
