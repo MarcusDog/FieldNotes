@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if ! command -v python3 >/dev/null 2>&1; then
+  echo 'Verification requires Python 3 for the HTTP smoke test (python3 not found).' >&2
+  exit 1
+fi
 (cd "$ROOT/server" && go test -race -count=1 ./... && go vet ./...)
 (cd "$ROOT/web" && npm ci && npm test -- --run && npm run build)
 "$ROOT/scripts/smoke.sh"

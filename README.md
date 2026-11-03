@@ -19,6 +19,7 @@
 | Go | 1.26，本机验证为 1.26.1，无第三方 Go 依赖 |
 | React / TypeScript / Vite | 19.2.0 / 5.9.3 / 7.3.7 |
 | Node.js | 22.12+，建议 24 LTS；本机使用 25.8.1 |
+| Python | Python 3，仅用于 `./scripts/verify.sh` 的真实服务 smoke test |
 | 真机 | iPhone 15 Pro Max，Xcode 27.1；部署最低 iOS 15 |
 
 ## 启动 Go 与 React
@@ -84,6 +85,8 @@ Go 单独运行的默认端口和 Vite 的默认代理都是 8080。一键脚本
 ./scripts/verify.sh      # Go race/vet、React 测试/构建、服务重启测试
 ./scripts/unity.sh test  # Unity EditMode，需要已激活的 Unity
 ```
+
+`./scripts/verify.sh` 还需要 `python3`，因为它会运行独立的 HTTP/进程重启 smoke test；如果只需验证 Go 单元测试与 React 测试，可分别运行 `cd server && go test ./...` 和 `cd web && npm test -- --run`。
 
 Unity 网络集成测试还需设置 `FIELDNOTES_TEST_API=http://127.0.0.1:8091`，指向使用独立数据文件的 Go 服务；未设置会跳过这一项。它会创建测试记录，请勿指向需要保留的现场数据。
 
