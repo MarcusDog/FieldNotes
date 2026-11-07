@@ -45,6 +45,9 @@ with tempfile.TemporaryDirectory(prefix='fieldnotes-smoke-') as temp:
         issue = created['data']; assert issue['status'] == 'open' and issue['id']
         assert request('/api/issues', 'POST', payload, headers)[1]['data']['id'] == issue['id']
         assert len(request('/api/issues')[1]['data']) == 1
+        conflict_status, conflict, _ = request('/api/issues', 'POST', dict(payload, title='Different issue'), headers)
+        assert conflict_status == 409, conflict
+        assert len(request('/api/issues')[1]['data']) == 1
         path = '/api/issues/'+issue['id']+'/status'
         status, updated, _ = request(path, 'PATCH', {'status':'in_progress'}, {'Origin':url})
         assert status == 200 and updated['data']['status'] == 'in_progress', updated
