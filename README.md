@@ -75,7 +75,7 @@ Go 单独运行的默认端口和 Vite 的默认代理都是 8080。一键脚本
 {"title":"入口墙面破损","description":"左侧墙体存在裂缝","priority":"high","position":{"x":0.42,"y":0.03,"z":1.26}}
 ```
 
-后端补充 `id`、默认 `status:"open"`、UTC `createdAt/updatedAt`。状态请求为 `{"status":"in_progress"}`。优先级支持 `low/medium/high`，状态支持 `open/in_progress/resolved`。参数错误返回 400 和 `{"error":{"code":"validation_error","message":"...","fields":{...}}}`。完整约束与其他状态码见 [接口契约](docs/SPEC.md)。
+后端补充 `id`、默认 `status:"open"`、UTC `createdAt/updatedAt`。状态请求为 `{"status":"in_progress"}`。优先级支持 `low/medium/high`，状态支持 `open/in_progress/resolved`。参数错误返回 400 和 `{"error":{"code":"validation_error","message":"...","fields":{...}}}`。完整约束与其他状态码见 [接口契约](docs/SPEC.md)。 需要在独立测试数据上联调或复现超时重试时，使用 [可执行 API / CORS 示例](docs/API_CURL_EXAMPLES.md)。
 
 ## 完成情况与验证
 
