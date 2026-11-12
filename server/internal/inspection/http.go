@@ -65,8 +65,19 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// Only serve regular files within the configured build directory.
 		clean := filepath.Clean("/" + r.URL.Path)
 		name := filepath.Join(h.options.WebDir, clean)
-		info, err := os.Stat(name)
-		if err != nil || !info.Mode().IsRegular() {
+		// A symlink inside the build directory must not expose files outside it.
+		root, rootErr := filepath.EvalSymlinks(h.options.WebDir)
+		resolved, err := filepath.EvalSymlinks(name)
+		if rootErr == nil && err == nil {
+			var relative string
+			relative, err = filepath.Rel(root, resolved)
+			if err == nil && (relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator))) {
+				err = os.ErrPermission
+			}
+		}
+		if rootErr != nil || err != nil {
+			name = filepath.Join(h.options.WebDir, "index.html")
+		} else if info, statErr := os.Stat(name); statErr != nil || !info.Mode().IsRegular() {
 			name = filepath.Join(h.options.WebDir, "index.html")
 		}
 		http.ServeFile(w, r, name)
