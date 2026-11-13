@@ -2,7 +2,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export FIELDNOTES_TEST_ROOT="$ROOT"
-python3 - <<'PY'
+# Ignore PYTHONOPTIMIZE so Python assert-based API checks cannot silently pass.
+python3 -E - <<'PY'
 import json, os, pathlib, socket, subprocess, tempfile, time, urllib.request, urllib.error, uuid
 root = pathlib.Path(os.environ['FIELDNOTES_TEST_ROOT'])
 with tempfile.TemporaryDirectory(prefix='fieldnotes-smoke-') as temp:
